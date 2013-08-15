@@ -3,8 +3,7 @@ moduler
 
 A tool to visualize and report on dependencies in NodeJS projects.
 
-![Screenshot](http://trestletech.github.io/moduler/images/screenshot-small.png)
-A screenshot of the dependency graph created by moduler when using the HTML output option.
+See an [interactive demo](http://trestletech.github.io/moduler/) of the d3 visualization generated when moduler generates HTML. 
 
 Installation
 ------------
@@ -39,6 +38,14 @@ ToDo
 
  - Setup a proper callback on the file `walk` call.
  - Detect extraneous module imports by detecting when the variable to which an imported module is assigned is never again referenced in that file.
+
+
+Screenshot
+--------
+
+![Screenshot](http://trestletech.github.io/moduler/images/screenshot-small.png)
+
+A screenshot of the dependency graph created by moduler when using the HTML output option.
 
 License
 -------
