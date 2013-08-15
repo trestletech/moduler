@@ -31,6 +31,8 @@ var files = file.walkSync(dir, function(fPath, dir, files){
   });
 });
 
+var processTimer;
+
 function processFile(dir, file, data){
   dir = path.resolve(dir) + "/";
   var addr = path.resolve(dir, file);
@@ -71,12 +73,21 @@ function processFile(dir, file, data){
   }
 
   dependencies[addr] = modules;
+  //TODO: obviously Should do a proper async callback on the file.walk()
+  //  whenever that feature gets added to the library...
+  if (processTimer){
+    console.log("clearing");
+    clearTimeout(processTimer);
+  }
+  
+  // If no new files come in asynchronously in the next .25s, assume we're done 
+  // and print the output. It's possible that this could execute multiple times.
+  console.log("setting");
+  processTimer = setTimeout(processDependencies, 250);
 }
 
-//FIXME: obviously Should do a proper async callback on the file.walk()...
-setTimeout(processDependencies, 1000);
-
 function processDependencies(){
+  console.log("Processing!");
   var toStringify = [];
   _.each(dependencies, function(dep, file){
     _.each(dep, function(module){
