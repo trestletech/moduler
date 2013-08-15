@@ -16,6 +16,29 @@
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <style>
+
+    path.link {
+      fill: none;
+      stroke: #666;
+      stroke-width: 1.5px;
+    }
+
+    circle {
+      fill: #ccc;
+      stroke: #aaa;
+      stroke-width: 1.5px;
+    }
+
+    text {
+      fill: #000;
+      font: 10px sans-serif;
+      pointer-events: none;
+    }
+
+    </style>
+
   </head>
   <body>
       <div id="header">
@@ -43,7 +66,228 @@
 
 <p>A tool to visualize and report on dependencies in NodeJS projects.</p>
 
-<p><img src="images/screenshot-small.png" alt="Dependency Graph screenshot"></p>
+<div id="canvas"></div>
+
+A depiction of the dependencies in the <a href="https://github.com/rstudio/shiny-server/">Shiny Server</a> project.
+
+<script>
+
+// get the data
+var links = [{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"/Users/jeff/workspace/shiny-server/lib/core/log","type":null},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"fs","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"url","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"client-sessions","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"optimist","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"/Users/jeff/workspace/shiny-server/lib/core/shutdown","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"/Users/jeff/workspace/shiny-server/lib/proxy/sockjs","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"/Users/jeff/workspace/shiny-server/lib/router/config-router","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"/Users/jeff/workspace/shiny-server/lib/events/simple-event-bus","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/main","target":"webkit-devtools-agent","type":null},{"source":"/Users/jeff/workspace/shiny-server/lib/config/app-config","target":"/Users/jeff/workspace/shiny-server/lib/config/config","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/app-config","target":"/Users/jeff/workspace/shiny-server/lib/core/map","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/app-config","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/app-config","target":"events","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/config","target":"assert","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/config","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/config","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/config","target":"/Users/jeff/workspace/shiny-server/lib/config/schema","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/core/errors","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/core/fsutil","target":"graceful-fs","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/core/fsutil","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/core/log","target":"log4js","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/lexer","target":"assert","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/lexer","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/parser","target":"assert","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/parser","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/parser","target":"/Users/jeff/workspace/shiny-server/lib/config/lexer","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/core/qutil","target":"assert","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/core/qutil","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/core/render","target":"fs","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/core/render","target":"handlebars","type":null},{"source":"/Users/jeff/workspace/shiny-server/lib/core/render","target":"/Users/jeff/workspace/shiny-server/lib/core/map","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/events/simple-event-bus","target":"events","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/http","target":"http","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/http","target":"http-proxy","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/http","target":"q","type":null},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/http","target":"/Users/jeff/workspace/shiny-server/lib/core/errors","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/http","target":"/Users/jeff/workspace/shiny-server/lib/core/fsutil","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/http","target":"/Users/jeff/workspace/shiny-server/lib/core/shutdown","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/sockjs","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/sockjs","target":"sockjs","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/sockjs","target":"/Users/jeff/workspace/shiny-server/lib/core/errors","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/sockjs","target":"/Users/jeff/workspace/shiny-server/lib/core/fsutil","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/proxy/sockjs","target":"/Users/jeff/workspace/shiny-server/lib/core/render","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/config-router","target":"assert","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/config-router","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/config-router","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/config-router","target":"/Users/jeff/workspace/shiny-server/lib/core/permissions","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/config-router","target":"/Users/jeff/workspace/shiny-server/lib/router/router","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/config-router","target":"/Users/jeff/workspace/shiny-server/build/Release/posix","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/config-router","target":"/Users/jeff/workspace/shiny-server/lib/config/app-config","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/directory-router","target":"fs","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/directory-router","target":"send","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/directory-router","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/directory-router","target":"regexp-quote","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/directory-router","target":"/Users/jeff/workspace/shiny-server/lib/core/qutil","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/directory-router","target":"/Users/jeff/workspace/shiny-server/lib/worker/app-spec","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/router","target":"assert","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/router","target":"path","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/router","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/router","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/router","target":"/Users/jeff/workspace/shiny-server/lib/core/qutil","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/router/router","target":"/Users/jeff/workspace/shiny-server/lib/worker/app-spec","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/schema","target":"assert","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/schema","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/config/schema","target":"/Users/jeff/workspace/shiny-server/lib/core/map","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/core/permissions","target":"/Users/jeff/workspace/shiny-server/build/Release/posix","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/simple-scheduler","target":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/simple-scheduler","target":"/Users/jeff/workspace/shiny-server/lib/core/map","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/simple-scheduler","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler","target":"crypto","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler","target":"os","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler","target":"net","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler","target":"crypto","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler","target":"moment","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler","target":"q","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler","target":"/Users/jeff/workspace/shiny-server/lib/core/log","type":null},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler","target":"/Users/jeff/workspace/shiny-server/lib/worker/app-worker-handle","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/server/server","target":"assert","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/server/server","target":"http","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/server/server","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/worker/run-as","target":"unixgroups","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/worker/run-as","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/worker/run-as","target":"/Users/jeff/workspace/shiny-server/lib/core/map","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","target":"crypto","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","target":"net","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","target":"path","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","target":"underscore","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","target":"/Users/jeff/workspace/shiny-server/lib/core/errors","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","target":"/Users/jeff/workspace/shiny-server/lib/core/fsutil","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","target":"/Users/jeff/workspace/shiny-server/lib/worker/app-worker","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/scheduler/scheduler-registry","target":"events","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/worker/app-worker-handle","target":"events","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/worker/app-worker","target":"child_process","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/worker/app-worker","target":"util","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/worker/app-worker","target":"q","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/worker/app-worker","target":"/Users/jeff/workspace/shiny-server/lib/core/permissions","type":false},{"source":"/Users/jeff/workspace/shiny-server/lib/worker/app-worker","target":"split","type":false}];
+
+var nodes = {};
+
+// Compute the distinct nodes from the links.
+links.forEach(function(link) {
+    link.source = nodes[link.source] || 
+        (nodes[link.source] = {name: link.source});
+    link.target = nodes[link.target] || 
+        (nodes[link.target] = {name: link.target});
+    link.value = +link.value;
+});
+
+var width = 640,
+    height = 500;
+
+var force = d3.layout.force()
+    .nodes(d3.values(nodes))
+    .links(links)
+    .size([width, height])
+    .linkDistance(10)
+    .charge(-1000)
+    .on("tick", tick)
+    .start();
+
+var svg = d3.select("#canvas")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("pointer-events", "all")
+  .append('svg:g')
+    .call(d3.behavior.zoom().on("zoom", redraw))
+  .append('svg:g');
+
+svg.append('svg:rect')
+    .attr("style", "stroke: #CCC")
+    .attr("x", -width*10)
+    .attr("y", -height*10)
+    .attr('width', width*20)
+    .attr('height', height*20)
+    .attr('fill', '#FFF');
+
+function redraw() {
+  svg.attr("transform",
+      "translate(" + d3.event.translate + ")"
+      + " scale(" + d3.event.scale + ")");
+}
+
+var sourceColor = "#E41A1C";
+var targetColor = "#377EB8";
+
+//build the legend
+var legendData = [
+    {name: "Uses", color:targetColor},
+    {name: "Used by", color:sourceColor},
+];
+var legend = svg.selectAll('g')
+    .data(legendData)
+    .enter()
+  .append('g')
+    .attr('class', 'legend');
+
+legend.append('rect')
+    .attr('x', width - 100)
+    .attr('y', function(d, i){ return (i *  20) + 9;})
+    .attr('width', 10)
+    .attr('height', 10)
+    .style('fill', function(d) { 
+      return d.color;
+    });
+
+legend.append('text')
+    .attr('x', width - 88)
+    .attr('y', function(d, i){ return (i *  20) + 19;})
+    .text(function(d){ return d.name; });
+
+
+// build the arrow.
+svg.append("svg:defs").selectAll("marker")
+    .data(["end"])      // Different link/path types can be defined here
+  .enter().append("svg:marker")    // This section adds in the arrows
+    .attr("id", String)
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 15)
+    .attr("refY", -1.5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+  .append("svg:path")
+    .attr("d", "M0,-5L10,0L0,5");
+
+// add the links and the arrows
+var path = svg.append("svg:g").selectAll("path")
+    .data(force.links())
+  .enter().append("svg:path")
+//    .attr("class", function(d) { return "link " + d.type; })
+    .attr("class", "link")
+    .attr("marker-end", "url(#end)")
+    .attr("style", "opacity: .4;");
+
+
+// define the nodes
+var node = svg.selectAll(".node")
+    .data(force.nodes())
+  .enter().append("g")
+    .attr("class", "node")
+    .on("mouseover", mouseover)
+    .on("mouseout", mouseout);
+
+// add the nodes
+node.append("circle")
+    .attr("r", 5)
+    .attr("style", "opacity: .5;");
+
+// add the text 
+node.append("text")
+    .attr("x", 12)
+    .attr("dy", ".35em")
+    .attr("style", "font-size: .65em; opacity: .5;")
+    .text(function(d) { 
+      if (d.name.lastIndexOf("/") > -1){
+        return "..." + d.name.substring(d.name.lastIndexOf("/"));
+      }
+      return d.name; 
+    });
+
+// add the curvy lines
+function tick() {
+    path.attr("d", function(d) {
+        var dx = d.target.x - d.source.x,
+            dy = d.target.y - d.source.y,
+            dr = Math.sqrt(dx * dx + dy * dy);
+        return "M" + 
+            d.source.x + "," + 
+            d.source.y + "A" + 
+            dr + "," + dr + " 0 0,1 " + 
+            d.target.x + "," + 
+            d.target.y;
+    });
+
+    node
+        .attr("transform", function(d) { 
+        return "translate(" + d.x + "," + d.y + ")"; });
+}
+
+function mouseover() {
+  var d3self = d3.select(this)[0][0];
+  var targets = [];
+  var sources = [];
+  // Update the edges and create list of connected nodes.
+  path[0].forEach(function(p){    
+    if (p.__data__.source === d3self.__data__){
+      d3.select(p).attr("style", "opacity: 0.8; stroke: "+targetColor+";");
+      targets.push(p.__data__.target);
+    } else if (p.__data__.target === d3self.__data__){
+      d3.select(p).attr("style", "opacity: 0.8; stroke: "+sourceColor+";");
+      sources.push(p.__data__.source);
+    }
+  });
+
+  // Update connected nodes.
+  node[0].forEach(function(n){
+    if (targets.indexOf(n.__data__) >= 0){
+      d3.select(n).select('text')
+          .style('fill', targetColor)
+          .style('opacity', .75);
+      d3.select(n).select('circle')
+          .style('fill', targetColor);
+    } else if (sources.indexOf(n.__data__) >= 0){
+      d3.select(n).select('text')
+          .style('fill', sourceColor)
+          .style('opacity', .75);
+      d3.select(n).select('circle')
+          .style('fill', sourceColor);
+    }
+  });
+
+  // Update this node
+  d3.select(this).select("circle").transition()
+      .attr("r", 10);
+  d3.select(this).select("circle")
+      .style('opacity', 1);
+  d3.select(this).select("text")
+      .style('font-size', '.9em')
+      .style('opacity', 1);
+}
+
+
+function mouseout() {
+  var d3self = d3.select(this)[0][0];
+  path[0].forEach(function(p){
+    if (p.__data__.source === d3self.__data__){
+      d3.select(p).attr("style", "opacity: 0.4; stroke: #666;");
+    } else if (p.__data__.target === d3self.__data__){
+      d3.select(p).attr("style", "opacity: 0.4; stroke: #666;");
+    }
+  });
+
+  d3.select(this).select("circle").transition()
+      .attr("r", 5);
+  d3.select(this).select("circle")
+      .style('opacity', .5);
+  d3.select(this).select("text")
+      .style('font-size', '.65em')
+      .style('opacity', .4);
+
+  node.select('text')
+      .style('fill', null)
+      .style('opacity', .5);
+
+  node.select('circle')
+      .style('fill', '#CCC');
+}
+
+</script>
 
 <h2>
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
@@ -75,12 +319,6 @@ sudo npm install -g
 <pre><code>moduler -d ./lib/ -h -o "index.html"
 </code></pre>
 </li>
-</ul><h2>
-<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>ToDo</h2>
-
-<ul>
-<li>Setup a proper callback on the file <code>walk</code> call.</li>
-<li>Detect extraneous module imports by detecting when the variable to which an imported module is assigned is never again referenced in that file.</li>
 </ul><h2>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
