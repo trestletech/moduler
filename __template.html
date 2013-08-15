@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="http://d3js.org/d3.v3.js"></script>
+<style>
+
+path.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #aaa;
+  stroke-width: 1.5px;
+}
+
+text {
+  fill: #000;
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+</style>
+<body>
+<script>
+
+// get the data
+var links = {{linkJSON}};
+
+var nodes = {};
+
+// Compute the distinct nodes from the links.
+links.forEach(function(link) {
+    link.source = nodes[link.source] || 
+        (nodes[link.source] = {name: link.source});
+    link.target = nodes[link.target] || 
+        (nodes[link.target] = {name: link.target});
+    link.value = +link.value;
+});
+
+var width = window.innerWidth,
+    height = window.innerHeight;
+
+var force = d3.layout.force()
+    .nodes(d3.values(nodes))
+    .links(links)
+    .size([width, height])
+    .linkDistance(10)
+    .charge(-1000)
+    .on("tick", tick)
+    .start();
+
+var svg = d3.select("body")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("pointer-events", "all")
+  .append('svg:g')
+    .call(d3.behavior.zoom().on("zoom", redraw))
+  .append('svg:g');
+
+svg.append('svg:rect')
+    .attr("style", "stroke: #CCC")
+    .attr("x", -width*10)
+    .attr("y", -height*10)
+    .attr('width', width*20)
+    .attr('height', height*20)
+    .attr('fill', '#FFF');
+
+function redraw() {
+  svg.attr("transform",
+      "translate(" + d3.event.translate + ")"
+      + " scale(" + d3.event.scale + ")");
+}
+
+var sourceColor = "#E41A1C";
+var targetColor = "#377EB8";
+
+//build the legend
+var legendData = [
+    {name: "Uses", color:targetColor},
+    {name: "Used by", color:sourceColor},
+];
+var legend = svg.selectAll('g')
+    .data(legendData)
+    .enter()
+  .append('g')
+    .attr('class', 'legend');
+
+legend.append('rect')
+    .attr('x', width - 100)
+    .attr('y', function(d, i){ return (i *  20) + 9;})
+    .attr('width', 10)
+    .attr('height', 10)
+    .style('fill', function(d) { 
+      return d.color;
+    });
+
+legend.append('text')
+    .attr('x', width - 88)
+    .attr('y', function(d, i){ return (i *  20) + 19;})
+    .text(function(d){ return d.name; });
+
+
+// build the arrow.
+svg.append("svg:defs").selectAll("marker")
+    .data(["end"])      // Different link/path types can be defined here
+  .enter().append("svg:marker")    // This section adds in the arrows
+    .attr("id", String)
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 15)
+    .attr("refY", -1.5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+  .append("svg:path")
+    .attr("d", "M0,-5L10,0L0,5");
+
+// add the links and the arrows
+var path = svg.append("svg:g").selectAll("path")
+    .data(force.links())
+  .enter().append("svg:path")
+//    .attr("class", function(d) { return "link " + d.type; })
+    .attr("class", "link")
+    .attr("marker-end", "url(#end)")
+    .attr("style", "opacity: .4;");
+
+
+// define the nodes
+var node = svg.selectAll(".node")
+    .data(force.nodes())
+  .enter().append("g")
+    .attr("class", "node")
+    .on("mouseover", mouseover)
+    .on("mouseout", mouseout);
+
+// add the nodes
+node.append("circle")
+    .attr("r", 5)
+    .attr("style", "opacity: .5;");
+
+// add the text 
+node.append("text")
+    .attr("x", 12)
+    .attr("dy", ".35em")
+    .attr("style", "font-size: .65em; opacity: .5;")
+    .text(function(d) { 
+      if (d.name.lastIndexOf("/") > -1){
+        return "..." + d.name.substring(d.name.lastIndexOf("/"));
+      }
+      return d.name; 
+    });
+
+// add the curvy lines
+function tick() {
+    path.attr("d", function(d) {
+        var dx = d.target.x - d.source.x,
+            dy = d.target.y - d.source.y,
+            dr = Math.sqrt(dx * dx + dy * dy);
+        return "M" + 
+            d.source.x + "," + 
+            d.source.y + "A" + 
+            dr + "," + dr + " 0 0,1 " + 
+            d.target.x + "," + 
+            d.target.y;
+    });
+
+    node
+        .attr("transform", function(d) { 
+        return "translate(" + d.x + "," + d.y + ")"; });
+}
+
+function mouseover() {
+  var d3self = d3.select(this)[0][0];
+  var targets = [];
+  var sources = [];
+  // Update the edges and create list of connected nodes.
+  path[0].forEach(function(p){    
+    if (p.__data__.source === d3self.__data__){
+      d3.select(p).attr("style", "opacity: 0.8; stroke: "+targetColor+";");
+      targets.push(p.__data__.target);
+    } else if (p.__data__.target === d3self.__data__){
+      d3.select(p).attr("style", "opacity: 0.8; stroke: "+sourceColor+";");
+      sources.push(p.__data__.source);
+    }
+  });
+
+  // Update connected nodes.
+  node[0].forEach(function(n){
+    if (targets.indexOf(n.__data__) >= 0){
+      d3.select(n).select('text')
+          .style('fill', targetColor)
+          .style('opacity', .75);
+      d3.select(n).select('circle')
+          .style('fill', targetColor);
+    } else if (sources.indexOf(n.__data__) >= 0){
+      d3.select(n).select('text')
+          .style('fill', sourceColor)
+          .style('opacity', .75);
+      d3.select(n).select('circle')
+          .style('fill', sourceColor);
+    }
+  });
+
+  // Update this node
+  d3.select(this).select("circle").transition()
+      .attr("r", 10);
+  d3.select(this).select("circle")
+      .style('opacity', 1);
+  d3.select(this).select("text")
+      .style('font-size', '.9em')
+      .style('opacity', 1);
+}
+
+
+function mouseout() {
+  var d3self = d3.select(this)[0][0];
+  path[0].forEach(function(p){
+    if (p.__data__.source === d3self.__data__){
+      d3.select(p).attr("style", "opacity: 0.4; stroke: #666;");
+    } else if (p.__data__.target === d3self.__data__){
+      d3.select(p).attr("style", "opacity: 0.4; stroke: #666;");
+    }
+  });
+
+  d3.select(this).select("circle").transition()
+      .attr("r", 5);
+  d3.select(this).select("circle")
+      .style('opacity', .5);
+  d3.select(this).select("text")
+      .style('font-size', '.65em')
+      .style('opacity', .4);
+
+  node.select('text')
+      .style('fill', null)
+      .style('opacity', .5);
+
+  node.select('circle')
+      .style('fill', '#CCC');
+}
+
+</script>
+</body>
+</html>
+
