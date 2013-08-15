@@ -3,6 +3,8 @@ moduler
 
 A tool to visualize and report on dependencies in NodeJS projects.
 
+![Screenshot](http://trestletech.github.io/moduler/images/screenshot-small.png)
+A screenshot of the dependency graph created by moduler when using the HTML output option.
 
 Installation
 ------------
