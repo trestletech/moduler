@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Moduler by trestletech</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/trestletech/moduler">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/trestletech/moduler/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/trestletech/moduler/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Moduler</h1>
+          <p>A tool to visualize and report on dependencies in NodeJS projects.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/trestletech">trestletech</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a name="moduler" class="anchor" href="#moduler"><span class="octicon octicon-link"></span></a>moduler</h1>
+
+<p>A tool to visualize and report on dependencies in NodeJS projects.</p>
+
+<p><img src="http://imgur.com/E7YY0co" alt="Dependency Graph screenshot"></p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Pending. Will likely put on npm eventually. For now, you'll need to clone the repo then run <code>npm install</code>.</p>
+
+<pre><code>git clone https://github.com/trestletech/moduler.git
+cd moduler
+sudo npm install -g
+</code></pre>
+
+<p>Then the <code>moduler</code> command should be available system-wide.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>There current options include:</p>
+
+<ul>
+<li>
+<code>-d &lt;dir&gt;</code> the directory containing the node files you want to process.</li>
+<li>
+<code>-h</code> If not present, export the dependency graph as raw JSON. If present, export an HTML file wrapping that JSON which visualizes the graph using d3.</li>
+<li>
+<p><code>-o &lt;outputFile&gt;</code> If present, will direct the output to the given file name.</p>
+
+<p>The following would generate an HTML file containing the d3 visualization of the dependency graph of the JavaScript files contained in the "lib" directory.</p>
+
+<pre><code>moduler -d ./lib/ -h -o "index.html"
+</code></pre>
+</li>
+</ul><h2>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>ToDo</h2>
+
+<ul>
+<li>Setup a proper callback on the file <code>walk</code> call.</li>
+<li>Detect extraneous module imports by detecting when the variable to which an imported module is assigned is never again referenced in that file.</li>
+</ul><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>The MIT License (MIT)</p>
+
+<p>Copyright (c) 2013 Trestle Technology, LLC.</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-43159940-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
